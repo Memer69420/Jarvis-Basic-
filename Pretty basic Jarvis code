@@ -1,0 +1,148 @@
+import datetime      #pip install datetime
+import requests      #pip install requests
+import webbrowser    #pip install webbrowser
+import pywhatkit     #pip install pywhatkit
+import speech_recognition as sr   #pip install speech_recognition
+import pyttsx3      #pip install pyttsx3
+import wikipedia    #pip install wikipedia
+import pyjokes      #pip install pyjokes
+
+engine = pyttsx3.init()
+rate = engine.getProperty("rate")
+engine.setProperty("rate", 170)
+
+
+def talk(audio):
+    engine.say(audio)
+    print(f"JARVIS: {audio}")
+    engine.runAndWait()
+
+
+def introduce():
+    talk("Hello everyone. I am Jarvis, an Artificially Intelligent desktop assistant")
+
+
+def wishme():
+    hour = datetime.datetime.now().hour
+    if 1 <= hour < 12:
+        talk("Good morning sir")
+    elif 12 <= hour < 18:
+        talk("Good afternoon sir")
+    elif 18 <= hour < 24:
+        talk("Good evening sir")
+
+
+def time():
+
+    times = datetime.datetime.now().strftime('%I:%M %p')
+    talk(times)
+
+
+def weatherdata():
+    api_key = '30d4741c779ba94c470ca1f63045390a'
+
+    user_input = "Kathmandu"
+
+    weather_data = requests.get(
+        f"https://api.openweathermap.org/data/2.5/weather?q={user_input}&units=imperial&APPID={api_key}")
+
+    if weather_data.json()['cod'] == '404':
+        talk("No City Found")
+    else:
+        weather = weather_data.json()['weather'][0]['main']
+        temp = round(weather_data.json()['main']['temp'])
+
+        talk(f"The weather outside is {weather}")
+        talk(f"The temperature outside is {temp} degrees Fahrenheit")
+
+
+def dates():
+    year = datetime.datetime.now().year
+    month = datetime.datetime.now().month
+    day = datetime.datetime.now().day
+    talk(year), talk(month), talk(day)
+
+
+def takecommand():
+    r = sr.Recognizer()
+    with sr.Microphone() as source:
+        print("Listening...")
+        r.pause_threshold = 0.8
+        audio = r.listen(source)
+
+        try:
+            print("Recognizing...")
+            command = r.recognize_google(audio, language="en-US")
+            print(f"User: {command}\n".lower())
+
+        except Exception as Error:
+            talk("Say that once again please.")
+            return "None"
+
+        return command.lower()
+
+
+def dotask():
+
+    while True:
+
+        command = takecommand()
+
+        if "hello" in command:
+            talk("Hello sir")
+
+        elif "hey" in command:
+            talk("Hello sir")
+
+        elif "hi" in command:
+            talk("Hello sir")
+
+        elif "facebook" in command:
+            talk("Opening facebook...")
+            webbrowser.open('https://www.facebook.com')
+            talk("That has been done sir")
+
+        elif "youtube" in command:
+            talk("Launching youtube...")
+            webbrowser.open('https://www.youtube.com')
+            talk("That has been done sir")
+
+        elif "who is" in command:
+            talk("According to wikipedia...")
+            guy = command.replace("who is", "")
+            info = wikipedia.summary(guy, 2)
+            talk(info)
+
+        elif "play" in command:
+            song = command.replace("Jarvis play", "")
+            pywhatkit.playonyt(song)
+            talk("That has been done sir")
+
+        elif "quit" in command:
+            talk("As you wish sir")
+            break
+
+        elif "good night" in command:
+            talk("Goodnight sir")
+            break
+
+        elif "goodnight" in command:
+            talk("Goodnight sir")
+            break
+
+        elif "take a break" in command:
+            talk("Ok sir")
+            break
+
+        elif "weather" in command:
+            talk("Fetching weather data....")
+            weatherdata()
+
+        elif "time" in command:
+            time()
+
+        elif "joke" in command:
+            talk(pyjokes.get_joke())
+
+
+dotask()
