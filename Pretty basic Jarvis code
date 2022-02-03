@@ -41,7 +41,7 @@ def time():
 def weatherdata():
     api_key = '30d4741c779ba94c470ca1f63045390a'
 
-    user_input = "Kathmandu"
+    user_input = ""  # Enter your own city name here inside the parenthesis
 
     weather_data = requests.get(
         f"https://api.openweathermap.org/data/2.5/weather?q={user_input}&units=imperial&APPID={api_key}")
@@ -112,6 +112,9 @@ def dotask():
             guy = command.replace("who is", "")
             info = wikipedia.summary(guy, 2)
             talk(info)
+            
+        elif "introduce" in command:
+            introduce()
 
         elif "play" in command:
             song = command.replace("Jarvis play", "")
